@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Number Guessing Game</title>
   <style>
+    * { box-sizing: border-box; }
+
     body {
       font-family: 'Comic Sans MS', cursive, sans-serif;
       background: linear-gradient(135deg, #667eea, #764ba2);
@@ -13,110 +15,162 @@
       align-items: center;
       justify-content: center;
       margin: 0;
+      padding: 20px;
     }
 
     .game-box {
       background: white;
       border-radius: 20px;
-      padding: 40px;
+      padding: 30px 35px;
       text-align: center;
       box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-      max-width: 420px;
-      width: 90%;
-    }
-
-    h1 {
-      color: #764ba2;
-      font-size: 2em;
-      margin-bottom: 5px;
-    }
-
-    .subtitle {
-      color: #999;
-      margin-bottom: 25px;
-      font-size: 0.95em;
-    }
-
-    input[type="number"] {
+      max-width: 460px;
       width: 100%;
-      padding: 14px;
-      font-size: 1.4em;
-      border: 3px solid #ddd;
-      border-radius: 12px;
-      text-align: center;
-      box-sizing: border-box;
-      outline: none;
-      transition: border-color 0.2s;
     }
 
-    input[type="number"]:focus {
-      border-color: #764ba2;
-    }
+    h1 { color: #764ba2; font-size: 1.9em; margin: 0 0 6px; }
 
-    button {
-      margin-top: 15px;
-      width: 100%;
-      padding: 14px;
-      font-size: 1.2em;
-      font-family: inherit;
-      border: none;
-      border-radius: 12px;
+    /* ── MODE SELECTOR ── */
+    .mode-selector {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 14px 0 6px;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 9px 4px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      background: #f9f9f9;
       cursor: pointer;
-      transition: transform 0.1s, opacity 0.2s;
+      font-family: inherit;
+      font-size: 0.82em;
+      font-weight: bold;
+      color: #666;
+      transition: all 0.15s;
     }
-
-    button:active {
-      transform: scale(0.97);
-    }
-
-    #guess-btn {
+    .mode-btn.active {
+      border-color: #764ba2;
       background: #764ba2;
       color: white;
     }
 
-    #guess-btn:hover {
-      opacity: 0.9;
+    /* ── DIFFICULTY ── */
+    .difficulty-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 14px;
     }
+    .diff-btn {
+      flex: 1;
+      padding: 7px 4px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      background: #f9f9f9;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.8em;
+      color: #666;
+      transition: all 0.15s;
+    }
+    .diff-btn.active { border-color: #667eea; background: #667eea; color: white; }
+
+    /* ── TWO-PLAYER SETUP ── */
+    #two-player-setup { display: none; margin-bottom: 12px; }
+    #two-player-setup p { color: #555; font-size: 0.9em; margin: 0 0 8px; }
+    #secret-input-wrap { position: relative; display: inline-block; width: 100%; }
+    #secret-input {
+      width: 100%; padding: 12px; font-size: 1.3em; border: 3px solid #ddd;
+      border-radius: 12px; text-align: center; outline: none; font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    #secret-input:focus { border-color: #764ba2; }
+    #toggle-secret {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; font-size: 1.2em; padding: 0;
+    }
+    #set-secret-btn {
+      margin-top: 8px; width: 100%; padding: 11px;
+      font-size: 1em; font-family: inherit; border: none;
+      border-radius: 12px; background: #764ba2; color: white; cursor: pointer;
+    }
+    #set-secret-btn:hover { opacity: 0.9; }
+
+    /* ── TIMER ── */
+    #timer-bar-wrap {
+      background: #eee; border-radius: 8px; height: 12px;
+      margin-bottom: 12px; overflow: hidden; display: none;
+    }
+    #timer-bar {
+      height: 100%; border-radius: 8px;
+      background: linear-gradient(90deg, #27ae60, #f39c12);
+      transition: width 1s linear, background 1s linear;
+    }
+    #timer-label { font-size: 0.85em; color: #888; margin-bottom: 6px; display: none; }
+
+    /* ── SUBTITLE ── */
+    .subtitle { color: #999; margin-bottom: 14px; font-size: 0.9em; }
+
+    /* ── GUESS INPUT ── */
+    #guess-input {
+      width: 100%; padding: 14px; font-size: 1.4em;
+      border: 3px solid #ddd; border-radius: 12px;
+      text-align: center; outline: none;
+      transition: border-color 0.2s;
+    }
+    #guess-input:focus { border-color: #764ba2; }
+
+    /* ── BUTTONS ── */
+    button { transition: transform 0.1s, opacity 0.2s; }
+    button:active { transform: scale(0.97); }
+
+    #guess-btn {
+      margin-top: 12px; width: 100%; padding: 14px;
+      font-size: 1.2em; font-family: inherit; border: none;
+      border-radius: 12px; background: #764ba2; color: white; cursor: pointer;
+    }
+    #guess-btn:hover { opacity: 0.9; }
 
     #reset-btn {
-      background: #f0f0f0;
-      color: #555;
-      display: none;
+      margin-top: 10px; width: 100%; padding: 12px;
+      font-size: 1.1em; font-family: inherit; border: none;
+      border-radius: 12px; background: #f0f0f0; color: #555;
+      cursor: pointer; display: none;
     }
+    #reset-btn:hover { background: #e0e0e0; }
 
-    #reset-btn:hover {
-      background: #e0e0e0;
-    }
-
-    #message {
-      margin-top: 20px;
-      font-size: 1.3em;
-      min-height: 40px;
-      font-weight: bold;
-    }
-
+    /* ── FEEDBACK ── */
+    #message { margin-top: 16px; font-size: 1.25em; min-height: 40px; font-weight: bold; }
     .too-low  { color: #e67e22; }
     .too-high { color: #e74c3c; }
     .correct  { color: #27ae60; }
     .hint     { color: #555; }
+    .timeout  { color: #c0392b; }
 
-    #attempts {
-      margin-top: 10px;
-      color: #aaa;
-      font-size: 0.9em;
+    #attempts { margin-top: 8px; color: #aaa; font-size: 0.88em; }
+    #history  { margin-top: 8px; font-size: 0.82em; color: #bbb; min-height: 18px; }
+    .emoji    { font-size: 1.8em; display: block; margin-bottom: 3px; }
+
+    /* ── LEADERBOARD ── */
+    #leaderboard {
+      margin-top: 18px; border-top: 2px dashed #eee; padding-top: 14px;
     }
-
-    #history {
-      margin-top: 15px;
-      font-size: 0.85em;
-      color: #888;
-      min-height: 20px;
+    #leaderboard h3 { margin: 0 0 10px; color: #764ba2; font-size: 1em; }
+    #leaderboard-list { list-style: none; padding: 0; margin: 0; }
+    #leaderboard-list li {
+      display: flex; justify-content: space-between;
+      padding: 5px 8px; border-radius: 8px; font-size: 0.85em; color: #555;
     }
-
-    .emoji {
-      font-size: 2em;
-      display: block;
-      margin-bottom: 5px;
+    #leaderboard-list li:nth-child(odd) { background: #f7f4ff; }
+    #leaderboard-list li.gold   { color: #b8860b; font-weight: bold; }
+    #leaderboard-list li.silver { color: #888; font-weight: bold; }
+    #leaderboard-list li.bronze { color: #cd7f32; font-weight: bold; }
+    #best-badge {
+      display: inline-block; background: #ffd700; color: #7a5800;
+      border-radius: 20px; padding: 3px 14px; font-size: 0.8em;
+      font-weight: bold; margin-top: 6px; display: none;
     }
   </style>
 </head>
@@ -124,53 +178,244 @@
 
 <div class="game-box">
   <h1>🎯 Guess the Number!</h1>
-  <p class="subtitle">I'm thinking of a number between <strong>1</strong> and <strong>100</strong></p>
 
-  <input type="number" id="guess-input" min="1" max="100" placeholder="Your guess..." />
+  <!-- Mode selector -->
+  <div class="mode-selector">
+    <button class="mode-btn active" onclick="setMode('computer')">🤖 vs Computer</button>
+    <button class="mode-btn" onclick="setMode('two-player')">👥 Two Player</button>
+  </div>
 
+  <!-- Difficulty row (hidden in two-player) -->
+  <div class="difficulty-row" id="diff-row">
+    <button class="diff-btn active" onclick="setDifficulty('easy')">😊 Easy<br><small>1–20</small></button>
+    <button class="diff-btn" onclick="setDifficulty('medium')">😐 Medium<br><small>1–100</small></button>
+    <button class="diff-btn" onclick="setDifficulty('hard')">😈 Hard<br><small>1–500</small></button>
+  </div>
+
+  <!-- Two-player secret entry -->
+  <div id="two-player-setup">
+    <p>Player 1: type a secret number, then hand it to Player 2!</p>
+    <div id="secret-input-wrap">
+      <input type="password" id="secret-input" placeholder="Secret number…" min="1" max="9999" />
+      <button id="toggle-secret" onclick="toggleSecretVisibility()">👁️</button>
+    </div>
+    <button id="set-secret-btn" onclick="confirmSecret()">Set Secret & Start ▶</button>
+  </div>
+
+  <!-- Timer -->
+  <div id="timer-label">⏱️ Time left: <span id="timer-count">60</span>s</div>
+  <div id="timer-bar-wrap"><div id="timer-bar" style="width:100%"></div></div>
+
+  <p class="subtitle" id="subtitle">Guess a number between <strong>1</strong> and <strong>20</strong></p>
+
+  <input type="number" id="guess-input" min="1" max="9999" placeholder="Your guess…" />
   <button id="guess-btn" onclick="makeGuess()">Guess!</button>
   <button id="reset-btn" onclick="resetGame()">Play Again 🔄</button>
 
   <div id="message"></div>
   <div id="attempts"></div>
   <div id="history"></div>
+
+  <!-- Leaderboard -->
+  <div id="leaderboard" style="display:none">
+    <h3>🏆 Leaderboard <span id="best-badge"></span></h3>
+    <ul id="leaderboard-list"></ul>
+  </div>
 </div>
 
 <script>
-  let secretNumber;
-  let attempts;
-  let guesses;
-  let gameOver;
+  // ── Audio (Web Audio API) ─────────────────────────────────────────────────
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let ctx;
+  function getCtx() {
+    if (!ctx) ctx = new AudioCtx();
+    return ctx;
+  }
 
-  function startGame() {
-    secretNumber = Math.floor(Math.random() * 100) + 1;
-    attempts = 0;
-    guesses = [];
-    gameOver = false;
+  function playTone(freq, type, duration, gain = 0.4) {
+    try {
+      const ac = getCtx();
+      const osc = ac.createOscillator();
+      const vol = ac.createGain();
+      osc.connect(vol);
+      vol.connect(ac.destination);
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, ac.currentTime);
+      vol.gain.setValueAtTime(gain, ac.currentTime);
+      vol.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + duration);
+      osc.start(ac.currentTime);
+      osc.stop(ac.currentTime + duration);
+    } catch(e) {}
+  }
 
-    document.getElementById('guess-input').value = '';
-    document.getElementById('guess-input').disabled = false;
-    document.getElementById('guess-btn').style.display = 'block';
-    document.getElementById('reset-btn').style.display = 'none';
-    document.getElementById('message').textContent = '';
-    document.getElementById('message').className = '';
-    document.getElementById('attempts').textContent = '';
-    document.getElementById('history').textContent = '';
+  function soundTooLow()  { playTone(330, 'sine', 0.25); }
+  function soundTooHigh() { playTone(220, 'sine', 0.25); }
+  function soundTimeout() { playTone(180, 'sawtooth', 0.6); }
+  function soundWin() {
+    const notes = [523, 659, 784, 1047];
+    notes.forEach((f, i) => {
+      setTimeout(() => playTone(f, 'triangle', 0.35, 0.45), i * 120);
+    });
+  }
+
+  // ── State ─────────────────────────────────────────────────────────────────
+  const DIFFICULTIES = {
+    easy:   { max: 20,  time: 60  },
+    medium: { max: 100, time: 90  },
+    hard:   { max: 500, time: 120 },
+  };
+
+  let mode       = 'computer';   // 'computer' | 'two-player'
+  let difficulty = 'easy';
+  let secretNumber, attempts, guesses, gameOver;
+  let timerInterval, timeLeft;
+  let leaderboard = [];          // [{diff, attempts, date}]
+
+  // ── Mode & Difficulty ─────────────────────────────────────────────────────
+  function setMode(m) {
+    mode = m;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    event.target.closest('.mode-btn').classList.add('active');
+
+    const twoSetup = document.getElementById('two-player-setup');
+    const diffRow  = document.getElementById('diff-row');
+    const timerWrap = document.getElementById('timer-bar-wrap');
+    const timerLbl  = document.getElementById('timer-label');
+
+    if (mode === 'two-player') {
+      twoSetup.style.display = 'block';
+      diffRow.style.display  = 'none';
+      timerWrap.style.display = 'none';
+      timerLbl.style.display  = 'none';
+      document.getElementById('guess-input').style.display = 'none';
+      document.getElementById('guess-btn').style.display   = 'none';
+      document.getElementById('subtitle').textContent = 'Player 1: enter a secret number below';
+      clearTimer();
+    } else {
+      twoSetup.style.display = 'none';
+      diffRow.style.display  = 'flex';
+      document.getElementById('guess-input').style.display = '';
+      document.getElementById('guess-btn').style.display   = '';
+      resetGame();
+    }
+  }
+
+  function setDifficulty(d) {
+    difficulty = d;
+    document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+    event.target.closest('.diff-btn').classList.add('active');
+    resetGame();
+  }
+
+  // ── Two-player setup ──────────────────────────────────────────────────────
+  function toggleSecretVisibility() {
+    const inp = document.getElementById('secret-input');
+    const btn = document.getElementById('toggle-secret');
+    if (inp.type === 'password') { inp.type = 'number'; btn.textContent = '🙈'; }
+    else                         { inp.type = 'password'; btn.textContent = '👁️'; }
+  }
+
+  function confirmSecret() {
+    const val = parseInt(document.getElementById('secret-input').value);
+    if (isNaN(val) || val < 1) {
+      alert('Please enter a valid positive number!');
+      return;
+    }
+    secretNumber = val;
+    document.getElementById('secret-input').value = '';
+    document.getElementById('secret-input').type  = 'password';
+    document.getElementById('toggle-secret').textContent = '👁️';
+    document.getElementById('two-player-setup').style.display = 'none';
+    document.getElementById('subtitle').innerHTML =
+      `Player 2: guess the secret number!`;
+    document.getElementById('guess-input').style.display = '';
+    document.getElementById('guess-btn').style.display   = '';
+    document.getElementById('guess-input').removeAttribute('max');
+    attempts = 0; guesses = []; gameOver = false;
     document.getElementById('guess-input').focus();
+  }
+
+  // ── Timer ─────────────────────────────────────────────────────────────────
+  function startTimer() {
+    const cfg = DIFFICULTIES[difficulty];
+    timeLeft = cfg.time;
+    const wrap  = document.getElementById('timer-bar-wrap');
+    const bar   = document.getElementById('timer-bar');
+    const lbl   = document.getElementById('timer-label');
+    const count = document.getElementById('timer-count');
+
+    wrap.style.display = 'block';
+    lbl.style.display  = 'block';
+    count.textContent  = timeLeft;
+    bar.style.width    = '100%';
+    bar.style.background = 'linear-gradient(90deg, #27ae60, #f39c12)';
+
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      count.textContent = timeLeft;
+      const pct = (timeLeft / cfg.time) * 100;
+      bar.style.width = pct + '%';
+      if (pct < 30) bar.style.background = 'linear-gradient(90deg, #e74c3c, #c0392b)';
+      if (timeLeft <= 0) {
+        clearTimer();
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function clearTimer() {
+    clearInterval(timerInterval);
+    document.getElementById('timer-bar-wrap').style.display = 'none';
+    document.getElementById('timer-label').style.display    = 'none';
+  }
+
+  function handleTimeout() {
+    gameOver = true;
+    soundTimeout();
+    const msg = document.getElementById('message');
+    msg.innerHTML = `<span class="emoji">⌛</span>Time's up! The number was <strong>${secretNumber}</strong>`;
+    msg.className = 'timeout';
+    document.getElementById('guess-input').disabled = true;
+    document.getElementById('guess-btn').style.display  = 'none';
+    document.getElementById('reset-btn').style.display  = 'block';
+  }
+
+  // ── Core game ─────────────────────────────────────────────────────────────
+  function startGame() {
+    const cfg = DIFFICULTIES[difficulty];
+    secretNumber = Math.floor(Math.random() * cfg.max) + 1;
+    attempts = 0; guesses = []; gameOver = false;
+
+    document.getElementById('subtitle').innerHTML =
+      `Guess a number between <strong>1</strong> and <strong>${cfg.max}</strong>`;
+    document.getElementById('guess-input').max      = cfg.max;
+    document.getElementById('guess-input').value    = '';
+    document.getElementById('guess-input').disabled = false;
+    document.getElementById('guess-btn').style.display  = 'block';
+    document.getElementById('reset-btn').style.display  = 'none';
+    document.getElementById('message').textContent  = '';
+    document.getElementById('message').className    = '';
+    document.getElementById('attempts').textContent = '';
+    document.getElementById('history').textContent  = '';
+    document.getElementById('guess-input').focus();
+
+    startTimer();
   }
 
   function makeGuess() {
     if (gameOver) return;
+    // Unlock AudioContext on first interaction
+    try { getCtx().resume(); } catch(e) {}
 
     const input = document.getElementById('guess-input');
     const guess = parseInt(input.value);
-    const messageEl = document.getElementById('message');
-    const attemptsEl = document.getElementById('attempts');
-    const historyEl = document.getElementById('history');
+    const msgEl = document.getElementById('message');
+    const cfg   = DIFFICULTIES[difficulty];
+    const maxVal = mode === 'two-player' ? 999999 : cfg.max;
 
-    if (isNaN(guess) || guess < 1 || guess > 100) {
-      messageEl.textContent = '⚠️ Please enter a number between 1 and 100!';
-      messageEl.className = 'hint';
+    if (isNaN(guess) || guess < 1 || guess > maxVal) {
+      msgEl.textContent = `⚠️ Enter a number between 1 and ${maxVal}!`;
+      msgEl.className = 'hint';
       return;
     }
 
@@ -178,34 +423,89 @@
     guesses.push(guess);
 
     if (guess < secretNumber) {
-      messageEl.innerHTML = '<span class="emoji">⬆️</span>Too low! Go higher!';
-      messageEl.className = 'too-low';
+      soundTooLow();
+      msgEl.innerHTML = '<span class="emoji">⬆️</span>Too low! Go higher!';
+      msgEl.className = 'too-low';
     } else if (guess > secretNumber) {
-      messageEl.innerHTML = '<span class="emoji">⬇️</span>Too high! Go lower!';
-      messageEl.className = 'too-high';
+      soundTooHigh();
+      msgEl.innerHTML = '<span class="emoji">⬇️</span>Too high! Go lower!';
+      msgEl.className = 'too-high';
     } else {
-      messageEl.innerHTML = `<span class="emoji">🎉</span>You got it! The number was <strong>${secretNumber}</strong>!`;
-      messageEl.className = 'correct';
+      clearTimer();
+      soundWin();
+      msgEl.innerHTML = `<span class="emoji">🎉</span>You got it! The number was <strong>${secretNumber}</strong>!`;
+      msgEl.className = 'correct';
       gameOver = true;
       input.disabled = true;
-      document.getElementById('guess-btn').style.display = 'none';
-      document.getElementById('reset-btn').style.display = 'block';
+      document.getElementById('guess-btn').style.display  = 'none';
+      document.getElementById('reset-btn').style.display  = 'block';
+      if (mode === 'computer') recordScore(attempts);
     }
 
-    attemptsEl.textContent = `Attempts: ${attempts}`;
-    historyEl.textContent = `Your guesses: ${guesses.join(', ')}`;
+    document.getElementById('attempts').textContent = `Attempts: ${attempts}`;
+    document.getElementById('history').textContent  = `Your guesses: ${guesses.join(', ')}`;
     input.value = '';
     if (!gameOver) input.focus();
   }
 
-  function resetGame() {
-    startGame();
+  // ── Leaderboard ───────────────────────────────────────────────────────────
+  function recordScore(n) {
+    leaderboard.push({ diff: difficulty, attempts: n, date: new Date().toLocaleDateString() });
+    leaderboard.sort((a, b) => a.attempts - b.attempts);
+    if (leaderboard.length > 10) leaderboard.length = 10;
+    renderLeaderboard(n);
   }
 
-  document.getElementById('guess-input').addEventListener('keydown', function(e) {
+  function renderLeaderboard(latestAttempts) {
+    const board = document.getElementById('leaderboard');
+    const list  = document.getElementById('leaderboard-list');
+    const badge = document.getElementById('best-badge');
+    board.style.display = 'block';
+
+    const best = leaderboard[0].attempts;
+    if (latestAttempts === best && leaderboard.filter(e => e.attempts === best).length === 1) {
+      badge.textContent = '🥇 New Best!';
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+
+    const medals = ['gold', 'silver', 'bronze'];
+    list.innerHTML = leaderboard.map((e, i) =>
+      `<li class="${medals[i] || ''}">
+        <span>${i + 1}. ${e.diff} · ${e.date}</span>
+        <span>${e.attempts} guess${e.attempts !== 1 ? 'es' : ''}</span>
+       </li>`
+    ).join('');
+  }
+
+  // ── Reset ─────────────────────────────────────────────────────────────────
+  function resetGame() {
+    clearTimer();
+    if (mode === 'two-player') {
+      document.getElementById('two-player-setup').style.display = 'block';
+      document.getElementById('guess-input').style.display = 'none';
+      document.getElementById('guess-btn').style.display   = 'none';
+      document.getElementById('reset-btn').style.display   = 'none';
+      document.getElementById('message').textContent  = '';
+      document.getElementById('attempts').textContent = '';
+      document.getElementById('history').textContent  = '';
+      document.getElementById('subtitle').textContent = 'Player 1: enter a secret number below';
+      document.getElementById('secret-input').value = '';
+    } else {
+      startGame();
+    }
+  }
+
+  // ── Keyboard ──────────────────────────────────────────────────────────────
+  document.getElementById('guess-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') makeGuess();
   });
+  document.getElementById('secret-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') confirmSecret();
+  });
 
+  // ── Init ──────────────────────────────────────────────────────────────────
   startGame();
 </script>
 
